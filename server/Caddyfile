@@ -1,7 +1,7 @@
 {
   debug
 }
-http://127.0.0.1 {
+frontend-topaz-rho-27.vercel.app {
   reverse_proxy rtca:3001 rtca-2:4000 rtca-3:5032 {
     header_down Strict-Transport-Security max-age=31536000
   }
