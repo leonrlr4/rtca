@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto';
 import dotenv from 'dotenv';
 import Fastify from 'fastify';
 import fastifyCors from '@fastify/cors';
@@ -44,6 +45,7 @@ async function buildServer() {
     await publisher.publish(CONNECTION_COUNT_UPDATED_CHANNEL, String(incrResualt));
 
     io.on(NEW_MESSAGE_CHANNEL, async (message: any) => {
+      if (!JSON.stringify(message)) return;
       await publisher.publish(NEW_MESSAGE_CHANNEL, JSON.stringify(message));
     });
 
@@ -77,9 +79,18 @@ async function buildServer() {
 
   });
 
-  subscriber.on('message', (channel, text) => {
+  subscriber.on('message', (channel, count) => {
     if (channel === CONNECTION_COUNT_UPDATED_CHANNEL) {
-      socket.io.emit(CONNECTION_COUNT_UPDATED_CHANNEL, { count: text });
+      socket.io.emit(CONNECTION_COUNT_UPDATED_CHANNEL, { count: count });
+      return;
+    }
+    if (channel === NEW_MESSAGE_CHANNEL) {
+      socket.io.emit(NEW_MESSAGE_CHANNEL, {
+        message: count,
+        id: randomUUID(),
+        createdAt: new Date().toISOString(),
+        port: PORT,
+      });
       return;
     }
   });
