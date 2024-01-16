@@ -15,6 +15,10 @@ const UPSTASH_REDIS_REST_URL = process.env.UPSTASH_REDIS_REST_URL;
 
 const CONNECTION_COUNT = 'chat:connection-count';
 const CONNECTION_COUNT_UPDATED_CHANNEL = 'chat:connection-count-updated';
+const NEW_MESSAGE_CHANNEL = 'chat:new-message';
+// const MESSAGES_KEY = 'chat:messages';
+
+
 
 let connectedClients = 0;
 
@@ -39,6 +43,9 @@ async function buildServer() {
     connectedClients++;
     await publisher.publish(CONNECTION_COUNT_UPDATED_CHANNEL, String(incrResualt));
 
+    io.on(NEW_MESSAGE_CHANNEL, async (message: any) => {
+      await publisher.publish(NEW_MESSAGE_CHANNEL, JSON.stringify(message));
+    });
 
     io.on('disconnect', async () => {
       const decrResult = await publisher.decr(CONNECTION_COUNT);
@@ -55,6 +62,18 @@ async function buildServer() {
       console.error(err);
       return;
     }
+    console.log(count, 'of clients subscribe to', CONNECTION_COUNT_UPDATED_CHANNEL);
+
+  });
+
+  subscriber.subscribe(NEW_MESSAGE_CHANNEL, (err, count) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+
+    console.log(count, 'of clients subscribe to', NEW_MESSAGE_CHANNEL, 'channel');
+
 
   });
 
