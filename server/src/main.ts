@@ -17,9 +17,6 @@ const UPSTASH_REDIS_REST_URL = process.env.UPSTASH_REDIS_REST_URL;
 const CONNECTION_COUNT = 'chat:connection-count';
 const CONNECTION_COUNT_UPDATED_CHANNEL = 'chat:connection-count-updated';
 const NEW_MESSAGE_CHANNEL = 'chat:new-message';
-// const MESSAGES_KEY = 'chat:messages';
-
-
 
 let connectedClients = 0;
 

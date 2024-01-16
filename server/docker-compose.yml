@@ -1,1 +1,56 @@
+version: '3'
+
+services:
+  rtca:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - CORS_ORIGIN=http://localhost:3000
+      - UPSTASH_REDIS_REST_URL=${UPSTASH_REDIS_REST_URL}
+
+  rtca-2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000
+      - CORS_ORIGIN=http
+      - UPSTASH_REDIS_REST_URL=${UPSTASH_REDIS_REST_URL}
+
+  rtca-3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5032:5032"
+    environment:
+      - PORT=5032
+      - CORS_ORIGIN=http
+      - UPSTASH_REDIS_REST_URL=${UPSTASH_REDIS_REST_URL}
+
+  caddy:
+    image: caddy/caddy:2.7.3-alpine
+    container_name: caddy-server
+    restart: unless-stopped
+    ports:
+      # http connections
+      - "80:80"
+      # https connections
+      - "443:443"
+    volumes:
+      - $PWD/Caddyfile:/etc/caddy/Caddyfile
+      - $PWD/site:/srv
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+  caddy_config:
+
 
